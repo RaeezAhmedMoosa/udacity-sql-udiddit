@@ -47,7 +47,7 @@ FROM bad_posts
 LIMIT 100;
 
 
-SELECT COUNT(DISTINCT username)
+SELECT  DISTINCT username
 FROM bad_posts;
 
 
