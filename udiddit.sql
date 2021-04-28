@@ -64,6 +64,48 @@ By looking at the "bad_posts" table, I can identify the following 5 entities:
 • posts
 • topics
 • usernames
-• upvotes
-• downvotes
+• votes
 */
+
+
+
+### Part II: Create a New Schema for Udiddit
+
+
+/*
+For Part II, I need to create a new data schema for Udiddit. This will primarily
+focus on using the SQL DDL (Database Definition Language).
+
+The first thing I need to do is to fix the issues that were found in Part I of
+the project.
+*/
+
+
+/*
+The First Issue in Part I was the multiple entities issue. I need to create 5
+separate tables for the following entities:
+
+1. users
+2. topics
+3. posts
+4. votes
+5. comments
+
+*/
+
+
+/*
+According to Guideline 1(s), the "users" table must have the following rules:
+
+1.1 usernames must be unique
+1.2 usernames have a maximum length of 25 characters
+1.3 usernames can't be empty
+*/
+
+-- This works as intended in terms of DDL
+CREATE TABLE "users" (
+  "id" SERIAL,
+  "username" VARCHAR(25) NOT NULL,
+  CONSTRAINT "users_pk" PRIMARY KEY ("id"),
+  CONSTRAINT "unique_username" UNIQUE ("username")
+);
