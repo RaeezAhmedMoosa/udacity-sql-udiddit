@@ -88,11 +88,12 @@ separate tables for the following entities:
 1. users
 2. topics
 3. posts
-4. votes
-5. comments
+4. comments
+5. votes
 
 */
 
+### Users
 
 /*
 According to Guideline 1(a), the "users" table must have the following rules:
@@ -145,6 +146,8 @@ INSERT INTO "users" ("username")
   VALUES ('012345678901234567890123456789');
 
 
+
+### Topics
 
 /*
 According to Guideline 1(b), the "topics" table must have the following rules:
@@ -223,6 +226,9 @@ INSERT INTO "topics" ("name", "description")
   VALUES ('asoiaf', 'This is a subdiddit for fans of the Song of Ice and Fire series. While GRR Martin is taking his sweet, sweet time finishing the "Winds of Winter", we can all hang out here and wonder how more than a decade has passed since the last proper ASOIAF book.');
 
 
+
+
+### Posts
 
 /*
 According to Guideline 1(c), the "posts" table must have the following rules:
@@ -404,3 +410,11 @@ DELETE FROM "topics"
 -- This DML tests the fifth rule of Guideline 1(c) [SUCCESS]
 DELETE FROM "users"
   WHERE "username" = 'raeez_moosa';
+
+
+
+
+### Comments
+
+/*
+*/
