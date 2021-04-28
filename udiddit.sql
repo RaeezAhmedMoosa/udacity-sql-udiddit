@@ -122,13 +122,23 @@ business rules were working.
 INSERT INTO "users" ("username")
   VALUES ('raeez_moosa');
 
+
+  -- Test DML for adding multiple users at once [SUCCESS]
+  INSERT INTO "users" ("username")
+    VALUES ('nabilaC'),
+           ('SockoElBocco'),
+           ('Gabibi');
+
+
 -- This is an insertion of a username that is blank
 INSERT INTO "users" ("username")
   VALUES ('');
 
+
 -- This is another insertion of a blank username
 INSERT INTO "users" ("username")
   VALUES ('');
+
 
 -- This an insertion of a username that exceeds the maximum character length
 INSERT INTO "users" ("username")
@@ -166,6 +176,13 @@ business rules were working.
 -- This is a simple test DML adding a topic with no description
 INSERT INTO "topics" ("name")
   VALUES ('newcastleunited');
+
+
+  -- Test DML for inserting multiple topics at once
+INSERT INTO "topics" ("name")
+    VALUES ('cats'),
+           ('eldoglen'),
+           ('canada');
 
 /*
 This is a test DML which adds a topic and a description. It worked properly when
@@ -205,4 +222,185 @@ INSERT INTO "topics" ("name")
 INSERT INTO "topics" ("name", "description")
   VALUES ('asoiaf', 'This is a subdiddit for fans of the Song of Ice and Fire series. While GRR Martin is taking his sweet, sweet time finishing the "Winds of Winter", we can all hang out here and wonder how more than a decade has passed since the last proper ASOIAF book.');
 
-  
+
+
+/*
+According to Guideline 1(c), the "posts" table must have the following rules:
+
+3.1 title must have a maximum character length of 100 characters
+3.2 title cannot be empty
+3.3 posts can contain URLs or text content but NOT both
+3.4 if a topic is deleted, then all the posts asssociated witht that topic should
+    be deleted as well
+3.5 if a user, who created the post, is deleted then their post should remain
+    but it will become dissociated with that user
+*/
+
+/*
+The "posts" table should have the following columns:
+
+3.1 "id" SERIAL
+3.2 "topic_id" INTEGER
+3.3 "user_id" INTEGER
+3.4 "title" VARCHAR(100)
+3.5 "url" VARCHAR(2048)
+3.6 "text_content" TEXT
+*/
+
+
+/*
+This is the DDL which creates a "posts" tabe which complies with the first 2 rules
+set out in Guideline 1(c). It works as intended.
+*/
+CREATE TABLE "posts" (
+  "id" SERIAL,
+  "topic_id" INTEGER,
+  "user_id" INTEGER,
+  "title" VARCHAR(100),
+  "url" VARCHAR(2048),
+  "text_content" TEXT,
+  CONSTRAINT "posts_pk" PRIMARY KEY ("id"),
+  CONSTRAINT "topics_id_fk" FOREIGN KEY ("topic_id")
+  REFERENCES "topics",
+  CONSTRAINT "users_id_fk" FOREIGN KEY ("user_id")
+  REFERENCES "users",
+  CHECK (LENGTH(TRIM("title")) > 0),
+  CHECK (LENGTH("text_content") <= 40000)
+);
+
+
+/*
+This is the DDL for the "posts" table which attempts to implement the next 2
+rules set out in Guideline 1(c) relating to the deletion of referenced data
+*/
+CREATE TABLE "posts" (
+  "id" SERIAL,
+  "topic_id" INTEGER,
+  "user_id" INTEGER,
+  "title" VARCHAR(100),
+  "url" VARCHAR(2048),
+  "text_content" TEXT,
+  CONSTRAINT "posts_pk" PRIMARY KEY ("id"),
+  CONSTRAINT "topics_id_fk" FOREIGN KEY ("topic_id")
+  REFERENCES "topics" ON DELETE CASCADE,
+  CONSTRAINT "users_id_fk" FOREIGN KEY ("user_id")
+  REFERENCES "users" ON DELETE SET NULL,
+  CHECK (LENGTH(TRIM("title")) > 0),
+  CHECK (LENGTH("text_content") <= 40000)
+);
+
+
+/*
+This is the DDL for the "posts" table which attempts to implement the rule which
+restricts a user from posting both a "url" and "text_content" at the same time.
+Note that this seems to be the final version of the "posts" table.
+*/
+CREATE TABLE "posts" (
+  "id" SERIAL,
+  "topic_id" INTEGER,
+  "user_id" INTEGER,
+  "title" VARCHAR(100),
+  "url" VARCHAR(2048),
+  "text_content" TEXT,
+  CONSTRAINT "posts_pk" PRIMARY KEY ("id"),
+  CONSTRAINT "topics_id_fk" FOREIGN KEY ("topic_id")
+  REFERENCES "topics" ON DELETE CASCADE,
+  CONSTRAINT "users_id_fk" FOREIGN KEY ("user_id")
+  REFERENCES "users" ON DELETE SET NULL,
+  CONSTRAINT "no_empty_titles"
+  CHECK (LENGTH(TRIM("title")) > 0),
+  CONSTRAINT "post_content_restriction"
+  CHECK (("url" IS NOT NULL AND "text_content" IS NULL) OR
+        ("url" IS NULL AND "text_content" IS NOT NULL)),
+  CHECK (LENGTH("text_content") <= 40000)
+);
+
+
+-- This is test DML to verify that the "posts" table functions properly [SUCCESS]
+INSERT INTO "posts" ("topic_id", "user_id", "title", "text_content")
+  VALUES (
+    10, 1, 'When will the "Winds of Winter" be released?',
+    'Like everyone on this subdiddit, I am eagerly awaiting the release of the "Winds of Winter", it''s been over 6 years since I first read "A Game of Thrones" for the first time. I now have read all the books in the series twice. When do you think our suffering will end?'
+  );
+
+--
+INSERT INTO "posts" ("topic_id", "user_id", "title", "url")
+  VALUES (
+    10, 1, 'When will the "A Hope for Spring" be released?',
+    'https://asoiaf.westeros.org/'
+  );
+
+
+-- Another test DML for data insertion in the "posts" table [SUCCESS]
+INSERT INTO "posts" ("topic_id", "user_id", "title", "text_content")
+  VALUES (
+    3, 1, 'Which games do you wish were developed and released for the Vita?',
+    'Like many of my fellow udidditors, I had a PSP before I moved over to the Vita. The PSP had quite a robust library, when compared to the Vita. I really wish we could have had a "GTA: San Andreas Stories" and dedicated "God of War" and "Metal Gear Solid" games, which were not ports of the series'' PSP games.'
+  );
+
+
+--
+INSERT INTO "posts" ("topic_id", "user_id", "title", "text_content")
+  VALUES (
+    13, 4, 'Who is the ruler of Eldoglen?', 'It is I, Gabibi.'
+  );
+
+/*
+This is a DQL which was used to test whether or not the different tables could
+be successfully joined together without any issues. On testing, this produced
+the expected result.
+*/
+SELECT "u"."username",
+       "t"."name",
+       "p"."title"
+FROM "users" "u"
+JOIN "posts" "p"
+ON "u"."id" = "p"."user_id"
+JOIN "topics" "t"
+ON "t"."id" = "p"."topic_id";
+
+
+-- Remember that the GB clause is inserted BEFORE the OB clause
+SELECT "t"."name",
+       COUNT(*) AS "post_count"
+FROM "users" "u"
+JOIN "posts" "p"
+ON "u"."id" = "p"."user_id"
+JOIN "topics" "t"
+ON "t"."id" = "p"."topic_id"
+GROUP BY 1
+ORDER BY 2 DESC;
+
+
+-- This DML tests the first rule of Guideline 1(c) [SUCCESS]
+INSERT INTO "posts" ("topic_id", "user_id", "title", "text_content")
+  VALUES (
+    1, 1, 'pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp',
+    'title max character test'
+  );
+
+
+-- This DML tests the second rule of Guideline 1(c) [SUCCESS]
+INSERT INTO "posts" ("topic_id", "user_id", "title", "text_content")
+  VALUES (
+    3, 1, '', 'no empty title test - 1 blank space'
+  );
+
+
+-- This DML tests the third rule of Guideline 1(c) [SUCCESS]
+INSERT INTO "posts" ("topic_id", "user_id", "title", "url", "text_content")
+  VALUES (
+    1, 1, 'A good place to keep updated with Newcastle United',
+    'https://www.reddit.com/r/NUFC/',
+    'user can''t post both a URL and a text post test'
+  );
+
+
+-- This DML tests the fourth rule of Guideline 1(c) [SUCCESS]
+DELETE FROM "topics"
+  WHERE "name" = 'asoiaf';
+
+
+-- This DML tests the fifth rule of Guideline 1(c) [SUCCESS]
+DELETE FROM "users"
+  WHERE "username" = 'raeez_moosa';
