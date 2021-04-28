@@ -107,5 +107,29 @@ CREATE TABLE "users" (
   "id" SERIAL,
   "username" VARCHAR(25) NOT NULL,
   CONSTRAINT "users_pk" PRIMARY KEY ("id"),
-  CONSTRAINT "unique_username" UNIQUE ("username")
+  CONSTRAINT "unique_usernames" UNIQUE ("username"),
+  CONSTRAINT "no_empty_usernames"
+  CHECK (LENGTH(TRIM("username")) > 0)
 );
+
+
+/*
+Below are the test DML queries that were used to test and verify that the Udiddit
+business rules were working.
+*/
+
+-- This is normal insertion of a proper username
+INSERT INTO "users" ("username")
+  VALUES ('raeez_moosa');
+
+-- This is an insertion of a username that is blank
+INSERT INTO "users" ("username")
+  VALUES ('');
+
+-- This is another insertion of a blank username
+INSERT INTO "users" ("username")
+  VALUES ('');
+
+-- This an insertion of a username that exceeds the maximum character length
+INSERT INTO "users" ("username")
+  VALUES ('012345678901234567890123456789');
