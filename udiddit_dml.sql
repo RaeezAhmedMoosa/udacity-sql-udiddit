@@ -69,17 +69,109 @@ FROM "bad_comments"
 LIMIT 200;
 
 
--- Use this DQL for the final project
-SELECT DISTINCT REPLACE("username", '.', '_')
+-- Confirmed COUNT of 100 unique usernames
+SELECT COUNT(*)
+FROM (
+  SELECT DISTINCT "username"
+  FROM "bad_posts"
+) sub1;
+
+-- Confirmed COUNT of 9984 unique usernames
+SELECT COUNT(*)
+FROM (
+  SELECT DISTINCT "username"
+  FROM "bad_comments"
+) sub2;
+
+
+SELECT DISTINCT REGEXP_SPLIT_TO_TABLE("upvotes", ',')
+FROM "bad_posts"
+LIMIT 25;
+
+SELECT COUNT(*)
+FROM (
+  SELECT DISTINCT REGEXP_SPLIT_TO_TABLE("upvotes", ',')
+  FROM "bad_posts"
+) sub1;
+-- Confirmed COUNT of 1100 unique usernames
+
+
+SELECT DISTINCT REGEXP_SPLIT_TO_TABLE("downvotes", ',')
+FROM "bad_posts"
+LIMIT 25;
+
+SELECT COUNT(*)
+FROM (
+  SELECT DISTINCT REGEXP_SPLIT_TO_TABLE("downvotes", ',')
+  FROM "bad_posts"
+) sub1;
+-- Confirmed COUNT of 1100 unique usernames
+
+
+/*
+I need to redo this as I didn't get the usernames that were only found within
+the "upvotes" and "downvotes" column in the "bad_comments" table
+*/
+SELECT DISTINCT "username",
 FROM "bad_posts"
 
 UNION
 
-SELECT DISTINCT REPLACE("username", '.', '_')
+SELECT DISTINCT "username"
 FROM "bad_comments"
 
-LIMIT 200;
+UNION
 
+SELECT DISTINCT REGEXP_SPLIT_TO_TABLE("upvotes", ',')
+FROM "bad_posts"
+
+UNION
+
+SELECT DISTINCT REGEXP_SPLIT_TO_TABLE("downvotes", ',')
+FROM "bad_posts"
+
+
+-- I think this is the correct DQL for this part of the project
+SELECT COUNT(DISTINCT "username")
+FROM (
+  SELECT DISTINCT "username"
+  FROM "bad_posts"
+
+  UNION
+
+  SELECT DISTINCT "username"
+  FROM "bad_comments"
+
+  UNION
+
+  SELECT DISTINCT REGEXP_SPLIT_TO_TABLE("upvotes", ',') AS username
+  FROM "bad_posts"
+
+  UNION
+
+  SELECT DISTINCT REGEXP_SPLIT_TO_TABLE("downvotes", ',') AS username
+  FROM "bad_posts"
+) sub1;
+
+SELECT DISTINCT "username"
+FROM "bad_posts"
+
+UNION
+
+SELECT DISTINCT "username"
+FROM "bad_comments"
+
+UNION
+
+SELECT DISTINCT REGEXP_SPLIT_TO_TABLE("upvotes", ',') AS username
+FROM "bad_posts"
+
+UNION
+
+SELECT DISTINCT REGEXP_SPLIT_TO_TABLE("downvotes", ',') AS username
+FROM "bad_posts";
+
+LIMIT 1000;
 
 
 /*
@@ -262,3 +354,68 @@ INSERT INTO "comments" ("user_id", "post_id", "text_content")
   JOIN "posts" "p"
   ON "p"."id" = "bc"."post_id";
 -- Successful
+
+
+
+### Votes
+
+-- Test DQL for viewing the upvotes structure
+SELECT "id",
+      "upvotes"
+FROM "bad_posts"
+LIMIT 10;
+
+
+-- Test DQL for viewing the downvotes structure
+SELECT "id",
+      "downvotes"
+FROM "bad_posts"
+LIMIT 10;
+
+
+SELECT "id",
+       "upvotes",
+       "downvotes"
+FROM "bad_posts"
+WHERE "id" = 1;
+
+/*
+The test DQL below use the REGEXP_SPLIT_TO_TABLE function to split up all the
+values within the "upvotes" column and return in separate rows.
+*/
+SELECT "id",
+       REGEXP_SPLIT_TO_TABLE("upvotes", ',')
+FROM "bad_posts"
+LIMIT 10;
+
+/*
+The test DQL below use the REGEXP_SPLIT_TO_TABLE function to split up all the
+values within the "downvotes" column and return in separate rows.
+*/
+SELECT "id",
+       REGEXP_SPLIT_TO_TABLE("downvotes", ',')
+FROM "bad_posts"
+LIMIT 10;
+
+
+SELECT DISTINCT REGEXP_SPLIT_TO_TABLE("upvotes", ',')
+FROM "bad_posts"
+
+UNION
+
+SELECT DISTINCT REGEXP_SPLIT_TO_TABLE("downvotes", ',')
+FROM "bad_posts"
+
+LIMIT 100;
+
+
+SELECT COUNT(*)
+FROM (
+  SELECT DISTINCT REGEXP_SPLIT_TO_TABLE("upvotes", ',')
+  FROM "bad_posts"
+
+  UNION
+
+  SELECT DISTINCT REGEXP_SPLIT_TO_TABLE("downvotes", ',')
+  FROM "bad_posts"
+) sub2;
