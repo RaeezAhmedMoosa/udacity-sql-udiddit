@@ -570,3 +570,33 @@ INSERT INTO "comments" ("user_id", "comment_id", "text_content")
          (
           2, 4, 'I will check the archives and get back to you ASAP.'
          );
+
+
+
+### Votes
+
+/*
+According to Guideline 1(e), the "votes" table must have the following rules:
+
+5.1 a user can only vote once per post
+5.2 if a user gets deleted, then any votes cast by them should remain but it is
+    dissociated from the user
+5.3 if a post gets deleted, then all votes linked to that posts must be
+    automatically deleted as well
+
+For the voting system, store the values of the vote as 1 (upvote) and -1 (downvote)
+*/
+
+/*
+This is the DDL that appears to create the "votes" table as per the business
+rules set out in Guideline 1(e)
+*/
+CREATE TABLE "votes" (
+  "user_id" INTEGER REFERENCES "users" ON DELETE SET NULL,
+  "post_id" INTEGER REFERENCES "posts" ON DELETE CASCADE,
+  "vote" INTEGER NOT NULL,
+  CONSTRAINT "user_voting_rule"
+  UNIQUE ("user_id", "post_id"),
+  CONSTRAINT "up_down_votes"
+  CHECK ("vote" = 1 OR "vote" = -1)
+);
