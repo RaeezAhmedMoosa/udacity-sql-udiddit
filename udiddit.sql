@@ -146,6 +146,16 @@ INSERT INTO "users" ("username")
   VALUES ('012345678901234567890123456789');
 
 
+-- Test DML to be executed upon each initialisation of the project:
+
+INSERT INTO "users" ("username")
+  VALUES ('KenKutaragi'),
+         ('Ha1m5aban'),
+         ('Br3tH4rt'),
+         ('Ned_the_Stark'),
+         ('G3R4LT');
+
+
 
 ### Topics
 
@@ -226,6 +236,13 @@ INSERT INTO "topics" ("name", "description")
   VALUES ('asoiaf', 'This is a subdiddit for fans of the Song of Ice and Fire series. While GRR Martin is taking his sweet, sweet time finishing the "Winds of Winter", we can all hang out here and wonder how more than a decade has passed since the last proper ASOIAF book.');
 
 
+-- Test DML to be executed upon each initialisation of the project:
+INSERT INTO "topics" ("name", "description")
+  VALUES ('ps3', 'The subdiddit for all things PS3'),
+         ('PowerRangers', 'Home of the Mighty Morphin''Power Rangers'),
+         ('calgary', ''),
+         ('winterfell', 'There must always be a Stark in the Winterfell subdiddit'),
+         ('witchers', '');
 
 
 ### Posts
@@ -412,6 +429,28 @@ DELETE FROM "users"
   WHERE "username" = 'raeez_moosa';
 
 
+-- Test DML to be executed upon each initialisation of the project:
+INSERT INTO "posts" ("topic_id", "user_id", "title", "text_content")
+  VALUES (
+          4, 4, 'When will the "Winds of Winter" be released?',
+          'Like everyone on this subdiddit, I am eagerly awaiting the release of the "Winds of Winter", it''s been over 6 years since I first read "A Game of Thrones" for the first time. I now have read all the books in the series twice. When do you think our suffering will end?'
+          ),
+         (
+          1, 1, 'Which PS3 games should be released for the PS4/PS5?',
+          'Since the PS4 and PS5 lack backward compatibility with the PS3, I feel that there are a ton of games which have simply been forgotten in the sands of time. I would love a remake or even a remaster of "ModNation Racer", but it must include online multiplayer. Which games do you think deserve a second chance?'
+          ),
+         (
+          2, 2, 'Who is your favourite ranger?',
+          'So fellow fans, out of the entire MMPR series, who is your favourite ranger (let''s see the flood of Green/White Ranger...)'
+         ),
+         (
+          4, 5, 'Spending the winter in winterfell?',
+          'Can anyone advise me on whether or not this is a good idea? I''ve heard there''s an ice dragon nearby as well.'
+         ),
+         (
+          3, 3, 'My new website is up',
+          'https://www.brethart.com/'
+        );
 
 
 ### Comments
@@ -464,3 +503,70 @@ CREATE TABLE "comments" (
   CHECK (("post_id" IS NULL AND "comment_id" IS NOT NULL) OR
         ("post_id" IS NOT NULL AND "comment_id" IS NULL))
 );
+
+/*
+This section is used to test the table in a simple manner and also against the
+business rules.
+*/
+
+-- This test DML inserts a comment targeting a post
+INSERT INTO "comments" ("user_id", "post_id", "text_content")
+  VALUES (
+    2, 1, 'Don''t get your hopes up...'
+  );
+
+
+-- This test DML inserts a comment targeting a post
+INSERT INTO "comments" ("user_id", "post_id", "text_content")
+  VALUES (
+    3, 1, 'Perhaps just before you complete your BCom(Hons) in Data Science?'
+  );
+
+
+-- This is test DQL which is testing the joining of the tables
+SELECT "u"."username",
+       "p"."title",
+       "c"."text_content"
+FROM "comments" "c"
+JOIN "posts" "p"
+ON "p"."id" =  "c"."post_id"
+JOIN "users" "u"
+ON "u"."id" = "c"."user_id";
+
+
+/*
+This test DML is used to see if the new comment structure is working. Upon
+*/
+INSERT INTO "comments" ("user_id", "comment_id", "text_content")
+  VALUES (
+    1, 1, 'Shouldn''t we be more positive? Actually, you''re right, it will never be released.'
+  );
+
+
+-- Test DML to be executed upon each initialisation of the project:
+INSERT INTO "comments" ("user_id", "post_id", "text_content")
+  VALUES (
+          5, 1, 'Don''t get your hopes up...'
+         ),
+         (
+          2, 2, 'I am just sad there was no Power Ranger game(s) on the PS3...'
+         ),
+         (
+          3, 3, 'Definitely the Pink Ranger for me.'
+         ),
+         (
+          4, 3, 'Is there a Grey Ranger in any of the series?'
+         ),
+         (
+          5, 3, 'What exactly is a Power Ranger?'
+        );
+
+
+-- Test DML to be executed upon each initialisation of the project:
+INSERT INTO "comments" ("user_id", "comment_id", "text_content")
+  VALUES (
+          2, 5, 'Have you seriously not heard about the Mighty Morphin''Power Rangers?'
+         ),
+         (
+          2, 4, 'I will check the archives and get back to you ASAP.'
+         );
