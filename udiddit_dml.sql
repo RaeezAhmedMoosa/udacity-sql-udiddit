@@ -179,3 +179,16 @@ ON "t"."name" = "bp"."topic"
 JOIN "users" "u"
 ON "u"."username" = "bp"."username"
 LIMIT 100;
+
+-- This new test DQL attempts to sync with the business rule
+SELECT "t"."id",
+       "u"."id",
+       LEFT("bp"."title", 100),
+       LEFT("bp"."url", 2048),
+       LEFT("bp"."text_content", 40000)
+FROM "bad_posts" "bp"
+JOIN "topics" "t"
+ON "t"."name" = "bp"."topic"
+JOIN "users" "u"
+ON "u"."username" = "bp"."username"
+LIMIT 100;
