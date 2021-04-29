@@ -192,3 +192,26 @@ ON "t"."name" = "bp"."topic"
 JOIN "users" "u"
 ON "u"."username" = "bp"."username"
 LIMIT 100;
+
+
+/*
+This is the test DML section for data concerning topics and "name". I had an
+issue in the first attempt at migrating the data. The issue was that for one or
+more of the "title" values from the "bad_posts" table, the character length for
+one or more of these values exceeded 100 characters.
+
+The new table "posts" has a (n) LIMIT on the data type (VARCHAR) for the "title"
+of 100 characters. To resolve this issue, I used the LEFT function to extract all
+the relevant for a maximum value of their stated LIMIT/CONSTRAINT.
+*/
+INSERT INTO "posts" ("topic_id", "user_id", "title", "url", "text_content")
+  SELECT "t"."id",
+        "u"."id",
+        LEFT("bp"."title", 100),
+        LEFT("bp"."url", 2048),
+        LEFT("bp"."text_content", 40000)
+        FROM "bad_posts" "bp"
+        JOIN "topics" "t"
+        ON "t"."name" = "bp"."topic"
+        JOIN "users" "u"
+        ON "u"."username" = "bp"."username";
