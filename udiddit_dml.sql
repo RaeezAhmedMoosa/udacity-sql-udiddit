@@ -246,3 +246,19 @@ JOIN "posts" "p"
 ON "p"."id" = "bc"."post_id"
 LIMIT 10;
 -- Successful
+
+
+/*
+This is the test DML section for data concerning the "comments" table.
+*/
+
+INSERT INTO "comments" ("user_id", "post_id", "text_content")
+  SELECT "u"."id" AS user_id,
+        "p". "id" AS post_id,
+        "bc"."text_content"
+        FROM "bad_comments" "bc"
+        JOIN "users" "u"
+  ON "u"."username" = "bc"."username"
+  JOIN "posts" "p"
+  ON "p"."id" = "bc"."post_id";
+-- Successful
