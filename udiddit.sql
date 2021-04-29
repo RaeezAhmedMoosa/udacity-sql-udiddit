@@ -417,4 +417,50 @@ DELETE FROM "users"
 ### Comments
 
 /*
+According to Guideline 1(d), the "comments" table must have the following rules:
+
+4.1 text content of a comment can't be empty
+4.2 new comment structure should allow comment threads at any level
+4.3 if a post is deleted, all comments associated with that posts should be
+    automatically deleted as well
+4.4 if a user, who created a comment, is deleted, the comment will remain but
+    the comment will become dissociated from that user
+4.5 if a comment is deleted then all the comment's descendants in the thread
+    structure should be automatically deleted as well
 */
+
+/*
+The "comments" table should have the following columns:
+
+4.1 "id" SERIAL,
+4.2 "user_id" INTEGER,
+4.3 "post_id" INTEGER,
+4.4 "comment_id" INTEGER
+4.5 "text_content" TEXT
+*/
+
+/*
+This is the DDL that appears to create the "comments" table as per the business
+rules set out in Guideline 1(d)
+*/
+CREATE TABLE "comments" (
+  "id" SERIAL,
+  "user_id" INTEGER,
+  "post_id" INTEGER,
+  "comment_id" INTEGER,
+  "text_content" TEXT,
+  CONSTRAINT "comments_pk" PRIMARY KEY ("id"),
+  CONSTRAINT "username_fk" FOREIGN KEY ("user_id")
+  REFERENCES "users" ON DELETE SET NULL,
+  CONSTRAINT "posts_fk" FOREIGN KEY ("post_id")
+  REFERENCES "posts" ON DELETE CASCADE,
+  CONSTRAINT "comment_thread_fk" FOREIGN KEY ("comment_id")
+  REFERENCES "comments" ("id") ON DELETE CASCADE,
+  CONSTRAINT "no_empty_comments"
+  CHECK (LENGTH(TRIM("text_content")) > 0),
+  CONSTRAINT "max_comment_character_length"
+  CHECK (LENGTH("text_content") <= 10000),
+  CONSTRAINT "no_double_comments"
+  CHECK (("post_id" IS NULL AND "comment_id" IS NOT NULL) OR
+        ("post_id" IS NOT NULL AND "comment_id" IS NULL))
+);
