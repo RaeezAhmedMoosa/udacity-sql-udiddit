@@ -69,7 +69,7 @@ FROM "bad_comments"
 LIMIT 200;
 
 
---
+-- Use this DQL for the final project
 SELECT DISTINCT REPLACE("username", '.', '_')
 FROM "bad_posts"
 
@@ -119,6 +119,7 @@ This DQL replaces any topics which contain the '-' character with the '_' charac
 SELECT DISTINCT REPLACE("topic", '-', '_')
 FROM "bad_posts";
 
+
 /*
 This DQL uses an Inline Subquery to iterate further on the above DQL and replaces
 the '_' with a blank space '' character to harmonise the data a bit more
@@ -128,6 +129,7 @@ FROM (
   SELECT DISTINCT REPLACE("topic", '-', '_') AS topic_name
   FROM "bad_posts"
 ) sub1;
+-- Successful
 
 
 /*
@@ -144,6 +146,7 @@ INSERT INTO "topics" ("name")
     SELECT DISTINCT REPLACE("topic", '-', '_') AS topic_name
     FROM "bad_posts"
   ) sub1;
+-- Successful
 
 
 -- This is test DQL to check if the DML above was successful
@@ -179,6 +182,8 @@ ON "t"."name" = "bp"."topic"
 JOIN "users" "u"
 ON "u"."username" = "bp"."username"
 LIMIT 100;
+-- Successful
+
 
 -- This new test DQL attempts to sync with the business rule
 SELECT "t"."id",
@@ -192,6 +197,7 @@ ON "t"."name" = "bp"."topic"
 JOIN "users" "u"
 ON "u"."username" = "bp"."username"
 LIMIT 100;
+-- Successful
 
 
 /*
@@ -215,3 +221,28 @@ INSERT INTO "posts" ("topic_id", "user_id", "title", "url", "text_content")
         ON "t"."name" = "bp"."topic"
         JOIN "users" "u"
         ON "u"."username" = "bp"."username";
+-- Successful
+
+
+
+### Comments
+
+/*
+This is the Test DQL section for data concerning users
+*/
+
+/*
+This test DQL is returning a table which mirrors the structure of the new table
+"comments". It also attempts to perform JOINs in order to  return the correct
+columns and values to be used in the related DML query.
+*/
+SELECT "u"."id" AS user_id,
+       "p". "id" AS post_id,
+       "bc"."text_content"
+FROM "bad_comments" "bc"
+JOIN "users" "u"
+ON "u"."username" = "bc"."username"
+JOIN "posts" "p"
+ON "p"."id" = "bc"."post_id"
+LIMIT 10;
+-- Successful
