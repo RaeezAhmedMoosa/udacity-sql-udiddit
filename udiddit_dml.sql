@@ -150,3 +150,32 @@ INSERT INTO "topics" ("name")
 SELECT *
 FROM "topics"
 ORDER BY "name";
+
+
+
+### Posts
+
+/*
+This is the Test DQL section for data concerning users
+*/
+
+SELECT *
+FROM "bad_posts"
+LIMIT 10;
+
+/*
+This test DQL attempts to use the previous DML migrated data to return a table
+which incorporates the PRIMARY KEY values for the "usernames" and "topics" table
+(which is the "id" column for both tables) within the returned table.
+*/
+SELECT "t"."id",
+       "u"."id",
+       "bp"."title",
+       "bp"."url",
+       "bp"."text_content"
+FROM "bad_posts" "bp"
+JOIN "topics" "t"
+ON "t"."name" = "bp"."topic"
+JOIN "users" "u"
+ON "u"."username" = "bp"."username"
+LIMIT 100;
