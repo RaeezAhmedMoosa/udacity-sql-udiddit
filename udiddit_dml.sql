@@ -69,6 +69,19 @@ FROM "bad_comments"
 LIMIT 200;
 
 
+--
+SELECT DISTINCT REPLACE("username", '.', '_')
+FROM "bad_posts"
+
+UNION
+
+SELECT DISTINCT REPLACE("username", '.', '_')
+FROM "bad_comments"
+
+LIMIT 200;
+
+
+
 /*
 This is the test DML section for data concerning users and "usernames"
 */
@@ -121,9 +134,19 @@ FROM (
 This is the test DML section for data concerning topics and "name"
 */
 
+/*
+This DML uses the DQL containing an Inline subquery to migrate the topic data
+from "bad_posts" into the new "topics" table, specifically the "name" column
+*/
 INSERT INTO "topics" ("name")
   SELECT REPLACE ("topic_name", '_', '')
   FROM (
     SELECT DISTINCT REPLACE("topic", '-', '_') AS topic_name
     FROM "bad_posts"
   ) sub1;
+
+
+-- This is test DQL to check if the DML above was successful
+SELECT *
+FROM "topics"
+ORDER BY "name";
