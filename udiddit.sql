@@ -292,6 +292,7 @@ CREATE TABLE "posts" (
 );
 
 
+
 /*
 This is the DDL for the "posts" table which attempts to implement the next 2
 rules set out in Guideline 1(c) relating to the deletion of referenced data
@@ -336,6 +337,27 @@ CREATE TABLE "posts" (
   CHECK (("url" IS NOT NULL AND "text_content" IS NULL) OR
         ("url" IS NULL AND "text_content" IS NOT NULL)),
   CHECK (LENGTH("text_content") <= 40000)
+);
+
+
+--
+CREATE TABLE "posts" (
+  "id" SERIAL,
+  "topic_id" INTEGER,
+  "user_id" INTEGER,
+  "title" VARCHAR(100),
+  "url" VARCHAR,
+  "text_content" TEXT,
+  CONSTRAINT "posts_pk" PRIMARY KEY ("id"),
+  CONSTRAINT "topics_id_fk" FOREIGN KEY ("topic_id")
+  REFERENCES "topics" ON DELETE CASCADE,
+  CONSTRAINT "users_id_fk" FOREIGN KEY ("user_id")
+  REFERENCES "users" ON DELETE SET NULL,
+  CONSTRAINT "no_empty_titles"
+  CHECK (LENGTH(TRIM("title")) > 0),
+  CONSTRAINT "post_content_restriction"
+  CHECK (("url" IS NOT NULL AND "text_content" IS NULL) OR
+        ("url" IS NULL AND "text_content" IS NOT NULL))
 );
 
 
