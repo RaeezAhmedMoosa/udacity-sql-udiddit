@@ -251,6 +251,10 @@ FROM (
 -- Successful
 
 
+-- This is similar to the above query, but uses 'daisy-chaining' instead
+SELECT DISTINCT REPLACE(REPLACE("topic", '-', '_'), '_', '')
+FROM "bad_posts";
+
 /*
 This is the test DML section for data concerning topics and "name"
 */
