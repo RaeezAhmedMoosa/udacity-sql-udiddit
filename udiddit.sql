@@ -592,8 +592,8 @@ This is the DDL that appears to create the "votes" table as per the business
 rules set out in Guideline 1(e)
 */
 CREATE TABLE "votes" (
-  "user_id" INTEGER REFERENCES "users" ON DELETE SET NULL,
   "post_id" INTEGER REFERENCES "posts" ON DELETE CASCADE,
+  "user_id" INTEGER REFERENCES "users" ON DELETE SET NULL,
   "vote" INTEGER NOT NULL,
   CONSTRAINT "user_voting_rule"
   UNIQUE ("user_id", "post_id"),
