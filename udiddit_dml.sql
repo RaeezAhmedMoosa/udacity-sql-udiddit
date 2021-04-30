@@ -194,7 +194,34 @@ SELECT *
 FROM "users"
 LIMIT 200;
 
+/*
+This is the correct DML for the migration of usernames from all the columns
+("username", "username", "upvotes" and "downvotes") from both tables
+*/
 
+--
+INSERT INTO "users" ("username")
+  SELECT DISTINCT "username"
+  FROM "bad_posts"
+
+  UNION
+
+  SELECT DISTINCT "username"
+  FROM "bad_comments"
+
+  UNION
+
+  SELECT DISTINCT REGEXP_SPLIT_TO_TABLE("upvotes", ',') AS username
+  FROM "bad_posts"
+
+  UNION
+
+  SELECT DISTINCT REGEXP_SPLIT_TO_TABLE("downvotes", ',') AS username
+  FROM "bad_posts";
+
+--
+SELECT COUNT("username")
+FROM "users";
 
 ### Topics
 
