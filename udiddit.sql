@@ -210,7 +210,7 @@ case characters when being inserted into the new "topics" table.
 Another note, the ESCAPE command for SQL when you need to include a single
 quotation mark within a string is "'" (the single quotation mark). So for this
 DML it cannot be ('...Sony's...') or ('...Sony\'s...'). The correct syntax is
-('...Sony''s...'). You basically need to use 2 single quotation marks.
+('...Sony''s...'). You basically need to use 2 single quotation marks "''".
 */
 INSERT INTO "topics" ("name", "description")
   VALUES (LOWER('PSP'), 'A subdiddit for all things Playstation Portable, the red-headed and oft-forgotten handheld console from our overlords at Sony. Hacked too soon, and now there''s no store available');
