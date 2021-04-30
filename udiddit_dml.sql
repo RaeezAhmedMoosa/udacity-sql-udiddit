@@ -271,6 +271,11 @@ INSERT INTO "topics" ("name")
   ) sub1;
 -- Successful
 
+-- Use this DML for the final version
+INSERT INTO "topics" ("name")
+  SELECT DISTINCT REPLACE(REPLACE("topic", '-', '_'), '_', '')
+  FROM "bad_posts";
+
 
 -- This is test DQL to check if the DML above was successful
 SELECT *
@@ -450,3 +455,41 @@ FROM (
   SELECT DISTINCT REGEXP_SPLIT_TO_TABLE("downvotes", ',')
   FROM "bad_posts"
 ) sub2;
+
+
+SELECT DISTINCT "id",
+       REGEXP_SPLIT_TO_TABLE("upvotes", ',')
+FROM "bad_posts";
+
+
+SELECT "id",
+       REGEXP_SPLIT_TO_TABLE("upvotes", ',')
+FROM "bad_posts";
+
+
+/*
+This is the test DQL which attempts to create a table which will be used in the
+DML to migrate all the upvotes to the new "votes" table.
+
+The Inline subquery returns a table which has the columns "id" which refers to
+the id of the post that was made. The "upvotes" column contained a range of
+usernames that upvoted that post, with each username separate by a comma. This
+was an obvious violation of First Normal Form.
+
+The Inline subquery splits up all these usernames into separate columns sorted
+according to the post "id" value.
+
+The Outer Query leverages the Inline subquery by extracting the "id" value, but
+it takes the "id" value from the "users" table and it adds an integer (1) to
+each row, which represents a numerical value for an upvote.
+*/
+SELECT sub1."id" AS post_id,
+       "u"."id" AS user_id,
+       1 AS vote
+FROM (
+  SELECT "id",
+         REGEXP_SPLIT_TO_TABLE("upvotes", ',') AS upvoters
+  FROM "bad_posts"
+) sub1
+JOIN "users" "u"
+ON "u"."username" = sub1."upvoters";
