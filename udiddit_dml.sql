@@ -560,6 +560,7 @@ INSERT INTO "votes" ("post_id", "user_id", "vote")
 -- Worked
 
 
+-- DML for the migration of the "downvotes" data
 INSERT INTO "votes" ("post_id", "user_id", "vote")
   SELECT sub1."id" AS post_id,
         "u"."id" AS user_id,
