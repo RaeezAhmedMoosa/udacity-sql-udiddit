@@ -199,7 +199,7 @@ This is the correct DML for the migration of usernames from all the columns
 ("username", "username", "upvotes" and "downvotes") from both tables
 */
 
---
+-- Correct DML for username migration
 INSERT INTO "users" ("username")
   SELECT DISTINCT "username"
   FROM "bad_posts"
@@ -218,7 +218,7 @@ INSERT INTO "users" ("username")
 
   SELECT DISTINCT REGEXP_SPLIT_TO_TABLE("downvotes", ',') AS username
   FROM "bad_posts";
-
+-- 11 077 rows
 --
 SELECT COUNT("username")
 FROM "users";
@@ -275,6 +275,7 @@ INSERT INTO "topics" ("name")
 INSERT INTO "topics" ("name")
   SELECT DISTINCT REPLACE(REPLACE("topic", '-', '_'), '_', '')
   FROM "bad_posts";
+-- 89 rows
 
 
 -- This is test DQL to check if the DML above was successful
@@ -349,7 +350,22 @@ INSERT INTO "posts" ("topic_id", "user_id", "title", "url", "text_content")
         ON "t"."name" = "bp"."topic"
         JOIN "users" "u"
         ON "u"."username" = "bp"."username";
--- Successful
+-- Successful 39 369 rows
+
+-- Another DML attempt to insert the data
+INSERT INTO "posts" ("id", "topic_id", "user_id", "title", "url", "text_content")
+  SELECT "bp"."id",
+        "t"."id",
+        "u"."id",
+        LEFT("bp"."title", 100),
+        "bp"."url",
+        "bp"."text_content"
+        FROM "bad_posts" "bp"
+        LEFT JOIN "topics" "t"
+        ON "t"."name" = "bp"."topic"
+        JOIN "users" "u"
+        ON "u"."username" = "bp"."username";
+-- 50 000 rows inserted! This is the correct one
 
 
 
@@ -394,6 +410,11 @@ INSERT INTO "comments" ("user_id", "post_id", "text_content")
 
 
 ### Votes
+
+/*
+This is the Test DQL section for data concerning votes
+*/
+
 
 -- Test DQL for viewing the upvotes structure
 SELECT "id",
