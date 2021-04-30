@@ -514,3 +514,81 @@ FROM (
 ) sub1
 JOIN "users" "u"
 ON "u"."username" = sub1."upvoters";
+
+
+SELECT sub1."id" AS post_id,
+       "u"."id" AS user_id,
+       -1 AS vote
+FROM (
+  SELECT "id",
+         REGEXP_SPLIT_TO_TABLE("downvotes", ',') AS downvoters
+  FROM "bad_posts"
+) sub1
+JOIN "users" "u"
+ON "u"."username" = sub1."downvoters";
+
+/*
+This is the test DML section for data concerning the "comments" table.
+*/
+
+/*
+There's an issue with this DML. Apparently post_id 42235 is not found in the
+new table "posts", so it was most likely excluded in the posts migration as it
+violated one of the rules.
+
+Somehow, I managed to solve this issue. I was performing an INNER JOIN in the
+DML inserting data for the "posts" table, resulting in only 39 369 rows being
+migrated. This was a problem as the original table had 50 000 rows. I somehow
+managed to excluded around 10 000 rows. This was due to the INNER JOIN and the
+fact that I modified the values of the "name" column in the "topics" table.
+
+I fixed this by performing a LEFT JOIN on the "bad_posts" table to ensure that
+all 50 000 "id" values were migrated. With this, the DML queries below now
+work without throwing an error for both "upvotes" and "downvotes".
+*/
+INSERT INTO "votes" ("post_id", "user_id", "vote")
+  SELECT sub1."id" AS post_id,
+        "u"."id" AS user_id,
+        1 AS vote
+        FROM (
+          SELECT "id",
+          REGEXP_SPLIT_TO_TABLE("upvotes", ',') AS upvoters
+          FROM "bad_posts"
+        ) sub1
+        JOIN "users" "u"
+        ON "u"."username" = sub1."upvoters";
+-- Worked
+
+
+INSERT INTO "votes" ("post_id", "user_id", "vote")
+  SELECT sub1."id" AS post_id,
+        "u"."id" AS user_id,
+        -1 AS vote
+        FROM (
+          SELECT "id",
+          REGEXP_SPLIT_TO_TABLE("downvotes", ',') AS downvoters
+          FROM "bad_posts"
+        ) sub1
+        JOIN "users" "u"
+        ON "u"."username" = sub1."downvoters";
+-- Worked
+
+-- Test DQL which checks to see if the DMLs above worked correctly
+SELECT *
+FROM "votes"
+ORDER BY "post_id", "vote" DESC
+LIMIT 50;
+
+-- Test DQL to count the number of votes cast per post id
+SELECT "post_id",
+       COUNT("vote") AS vote_count
+FROM "votes"
+GROUP BY 1
+ORDER BY 1;
+
+-- Test DQL to get the sum of the upvotes + (-downvotes)
+SELECT "post_id",
+       SUM("vote") AS vote_sum
+FROM "votes"
+GROUP BY 1
+ORDER BY 1;
