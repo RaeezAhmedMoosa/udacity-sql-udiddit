@@ -85,5 +85,15 @@ CREATE INDEX "topic_id_index"
 Guideline 2(h) – Find all the posts that link to a specific URL.
 */
 
-CREATE UNIQUE INDEX "unique_url_index"
+CREATE INDEX "url_index"
   ON "posts" ("url");
+--
+
+
+/*
+Guideline 2(l) – List all the top-level comments for a given post.
+*/
+
+CREATE INDEX "post_id_index"
+  ON "comments" ("post_id");
+--
