@@ -10,6 +10,10 @@ Guideline 2(a) – List all users who haven’t logged in during the last year
 ALTER TABLE "users"
   ADD COLUMN "login_date" TIMESTAMP;
 
+-- Test Index for "login_date"
+CREATE INDEX "login_date_index"
+    ON "users" ("login_date");
+
 -- Test DQL
 SELECT "id",
        "username",
