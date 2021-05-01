@@ -106,3 +106,14 @@ Guideline 2(k) – List the latest 20 comments made by a user.
 CREATE INDEX "user_id_index"
   ON "comments" ("user_id");
 --
+
+
+
+/*
+Guideline 2(l) – List the vote sum for each post
+*/
+SELECT "post_id",
+       SUM("vote") AS vote_sum
+FROM "votes"
+GROUP BY 1
+ORDER BY 1;
