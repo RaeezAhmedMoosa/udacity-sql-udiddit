@@ -28,12 +28,18 @@ Guideline 2(b) – List all users who haven’t created any posts
 */
 
 -- Test DQL which returns the post count per user id
+EXPLAIN ANALYZE
 SELECT "user_id",
        COUNT("id")
 FROM "posts"
 GROUP BY 1
 ORDER BY 2;
 
+EXPLAIN ANALYZE
+SELECT "user_id",
+       "id"
+FROM "posts";
+ORDER BY 1;
 
 -- Test DQL which returns the post count per username
 SELECT "u"."username",
@@ -43,6 +49,11 @@ LEFT JOIN "posts" "p"
 ON "u"."id" = "p"."user_id"
 GROUP BY 1
 ORDER BY 2;
+
+
+-- Test INDEX on the user_id column in posts
+CREATE INDEX "user_id__index"
+  ON "posts" ( "user_id");
 
 
 -- DQL which filters out the data to focus on users with 0 posts
@@ -59,3 +70,12 @@ SELECT "username",
 FROM "user_post_count"
 WHERE "post_count" = 0
 ORDER BY 1; -- Arranges the usernames in alphabetical order
+
+
+/*
+Guideline 2(d) – List all topics that don't have any posts
+*/
+
+-- DDL for the INDEX on the "topic_id" column in the"posts" table
+CREATE INDEX "topic_id_index"
+  ON "posts" ("topic_id");
