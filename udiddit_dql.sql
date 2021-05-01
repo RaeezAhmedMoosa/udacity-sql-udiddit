@@ -79,3 +79,11 @@ Guideline 2(d) – List all topics that don't have any posts
 -- DDL for the INDEX on the "topic_id" column in the"posts" table
 CREATE INDEX "topic_id_index"
   ON "posts" ("topic_id");
+
+
+/*
+Guideline 2(h) – Find all the posts that link to a specific URL.
+*/
+
+CREATE UNIQUE INDEX "unique_url_index"
+  ON "posts" ("url");
