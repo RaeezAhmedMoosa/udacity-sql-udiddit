@@ -256,6 +256,20 @@ SELECT DISTINCT REPLACE(REPLACE("topic", '-', '_'), '_', '')
 FROM "bad_posts";
 
 /*
+To avoid the issue that might cause my project to fail, I have decided to not
+use the REPLACE function when migrating the topic data
+*/
+SELECT DISTINCT "topic"
+FROM "bad_posts";
+
+
+SELECT COUNT(*) AS topic_count
+FROM (
+  SELECT DISTINCT "topic"
+  FROM "bad_posts"
+) sub1;
+
+/*
 This is the test DML section for data concerning topics and "name"
 */
 
