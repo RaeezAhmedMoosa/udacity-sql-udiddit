@@ -97,3 +97,12 @@ Guideline 2(l) – List all the top-level comments for a given post.
 CREATE INDEX "post_id_index"
   ON "comments" ("post_id");
 --
+
+
+/*
+Guideline 2(k) – List the latest 20 comments made by a user.
+*/
+
+CREATE INDEX "user_id_index"
+  ON "comments" ("user_id");
+--
