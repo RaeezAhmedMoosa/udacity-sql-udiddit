@@ -298,6 +298,16 @@ FROM "topics"
 ORDER BY "name";
 
 
+/*
+To avoid the issue that might cause my project to fail, I have decided to not
+use the REPLACE function when migrating the topic data
+*/
+INSERT INTO "topics" ("name")
+  SELECT DISTINCT "topic"
+  FROM "bad_posts";
+
+
+
 
 ### Posts
 
