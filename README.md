@@ -7,7 +7,7 @@ order to prevent plagiarism, the final written **report** is not included within
 this repo.
 
 ## Project Information
-This project focuses on Database Management Systems,specifically on relational databases. You assume the role of a data engineer with 3 tasks to be fulfilled.
+This project focuses on Database Management Systems, specifically on relational databases. You assume the role of a data engineer with 3 tasks to be fulfilled.
 As a data engineer, you are required to build the supporting data structures for **udiddit**, a social news aggregation site which is very similar to _reddit_.
 
 **udiddit** has registered users, and these users can post content (be it external
